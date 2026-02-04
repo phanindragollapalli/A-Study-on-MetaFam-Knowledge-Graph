@@ -1,0 +1,68 @@
+First of all Thank You for giving me this oppurtunity.
+
+In this report document i will share my journey of doing this cool precog task in detail explaining my decisions in each and every step and the result that i got,
+whether it is a success or a failure and probably the reason why i got that result upto my Knowledge and understanding.
+
+I have read about the tasks and decided to go with the graphs task.
+
+Reasons Why i have chosen this task above others:
+1. I really love graphs.
+2. I have read about Knowledge graphs, they are a very cool way of storing data (node1 -> relationship(edge) -> node2).
+Knowledge graphs can store the meaning of the given data very efficiently unlike the traditional relational Database model where we need to use foreign keys for showing relationships between entities.
+3. Also I am very interested in blood relations concept in logical reasoning (while preparing for my NTSE preparation for MAT (Mental Aptitude Test) i got in touch with Blood relations concept and I really love that concept)
+as this task includes extracting a lot of information from the Knowledge graph of the family, i think its super fun!!.
+4. To be honest i never taught that graphs are used in AIML research until i read it in slide shown by professor PK in our DnA course.
+After that i explored about Graphs involvment and i was fascinated with the kind of research that's going on.
+5. Also there is a lot creativity and fun part in this task on how to come up with metric deciding the closeness of two individuals in the Knowledge graph.
+6. Also deciding the rules and finding whether they hold good or not in task3 also seems super fun
+7. ofcourse Along with the above reasons, To be honest, i got really overwhelmed after seeing NLP, CV tasks and i dont know anything about quant.
+
+Hence i chose Graphs Task.
+
+Now why dont we go into my journey of doing this graph task.
+
+I have downloaded the dataset and had a look at it. 
+It contains 2 files train.txt (13821 lines) and test.txt (590 lines)
+
+As it is mentioned in the Doc, i will only use train.txt for training unless explicitly mentioned.
+
+Task-1 : Dataset Exploration
+
+step-1 : loading and parsing dataset.
+
+The dataset was loaded in a .ipynb file by parsing each line of train.txt into head–relation–tail triples. These triples were stored both as a structured DataFrame using pandas for analysis and as a directed multigraph using NetworkX, where entities represent nodes and relations represent labeled directed edges.
+Collected all unique heads and tails. Combined them into a single set. Removed duplicates.
+
+Why is this crucial?
+Because In a knowledge graph, Entities are nodes. Both head and tail represent entities. The same entity can appear as head in one triple and tail in another.
+ex: alice motherof bob as 1 triple and bob son of alice as another triple.
+
+i extracted all unique relationship types and stored them seperately.because relations are edge labels and they define semantics of connections.
+Also they are treated differently from entities in many Knowledge graph models.
+
+i built a directed multigraph where direction is from head -> tail and multiple edges are allowed between same nodes.
+
+Since the Metafam dataset guarantees at most one relation per ordered entity pair, a simple directed graph is sufficient, however, I chose a directed multigraph representation as a safe and general modeling choice.
+
+Why I am putting multiple representation of the same dataset as Raw triples, DataFrame, Node list, Relation list, Graph Object
+because i think Pandas DataFrames are required for Analytics, statistics.
+
+Also i have stored in a graph object because in future i can apply algorithms and graph techniques for more datamining and extraction of information.
+
+I created an undirected graph as well from the directed multi graph before because, Family connectivity ignores direction.
+Parent/child still connects people
+We want family clusters
+
+step-2 : Core Graph statistics
+
+In this part we use graph 
+
+Graph density:
+
+Density measures how full the graph is.
+Density = 2E/(n(n-1))
+
+we are measuring density because:
+1. Family graphs are naturally sparse
+2. Confirms realism of dataset
+

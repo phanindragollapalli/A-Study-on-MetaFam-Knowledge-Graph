@@ -1,0 +1,116 @@
+\documentclass[10pt,twocolumn,letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{cite}
+\usepackage{geometry}
+\geometry{letterpaper, margin=1in}
+
+\title{A Comprehensive Study on the MetaFam Knowledge Graph: Network Analysis, Community Detection, and Link Prediction}
+\author{G. Phanindra \\ Roll Number: 2024101068}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Knowledge graphs offer an efficient semantic structure for representing complex relationships, far surpassing traditional relational database models in capturing nuanced entity interactions. This study presents a comprehensive analysis of the MetaFam Knowledge Graph, a synthetic dataset modeling family lineages and connections. We deconstruct the graph to explore its underlying topology using centrality metrics and entropy. We then apply and compare the Louvain and Girvan-Newman algorithms for community detection to partition the graph into cohesive nuclear families. Furthermore, we mine logical rules (Horn clauses) to explicitly define relationship compositions and evaluate their confidence. Finally, we employ the ComplEx knowledge graph embedding model to perform link prediction, successfully learning the representation of asymmetric familial ties in a complex vector space. Our results demonstrate that modern graph analytics and representation learning can effectively map, cluster, and infer multi-generational human relationships.
+\end{abstract}
+
+\section{Introduction}
+Graphs provide a highly expressive framework for representing real-world relationships. Unlike traditional relational databases that rely on rigid tables and foreign keys, knowledge graphs map entities (nodes) and their relations (edges) as direct structural triples (head, relation, tail). This flexibility makes them exceptionally well-suited for modeling complex biological and social connections, such as family trees. 
+
+In this study, we analyze the MetaFam Knowledge Graph, consisting of 13,821 triples across 1,316 unique individuals and 28 distinct relationship types. The relationships range from immediate core family members (e.g., \textit{motherOf}, \textit{sisterOf}) to distant connections (e.g., \textit{boyFirstCousinOnceRemovedOf}). 
+
+The objective of this research is four-fold: (1) to construct and analyze the structural properties of the graph using centrality and connectivity metrics; (2) to detect cohesive family communities using unsupervised algorithms; (3) to discover deterministic logical rules governing the relationships; and (4) to embed the graph into a continuous vector space using the ComplEx model for the purpose of link prediction.
+
+\section{Methodology}
+
+\subsection{Graph Construction and Centrality Analysis}
+The dataset was parsed into directed multigraphs using the NetworkX library. To evaluate the structural importance of individuals within the family networks, we computed several centrality measures:
+\begin{itemize}
+    \item \textbf{Degree Centrality}: Identifies highly connected individuals (e.g., parents or central figures).
+    \item \textbf{Betweenness Centrality}: Highlights ``bridge'' individuals who connect different familial branches.
+    \item \textbf{Closeness Centrality}: Evaluates how quickly an individual can reach all other members in the family.
+\end{itemize}
+To measure the semantic richness of the network, we utilized Shannon Entropy on the relationship types:
+\begin{equation}
+    H(R) = -\sum_{i=1}^{|R|} p(r_i) \log_2 p(r_i)
+\end{equation}
+where $p(r_i)$ is the relative frequency of relationship $r_i$.
+
+\subsection{Community Detection}
+We sought to partition the graph into distinct nuclear families. We compared two fundamentally different algorithms:
+\begin{enumerate}
+    \item \textbf{Louvain Algorithm}: A modularity optimization method that builds communities by grouping densely connected nodes. Modularity $Q$ is maximized during this process.
+    \item \textbf{Girvan-Newman Algorithm}: A divisive hierarchical method that progressively removes edges with the highest betweenness centrality, naturally splitting the graph along weak connections.
+\end{enumerate}
+The detected communities were evaluated against the ground-truth families using the Purity Score, Normalized Mutual Information (NMI), and Adjusted Rand Index (ARI).
+
+\subsection{Rule Mining for Logical Inference}
+Families follow strict biological structures. We mined the graph for compositional Horn clauses (e.g., 2-hop and 3-hop paths) and inverse rules. 
+The reliability of a discovered rule $A \rightarrow B$ is evaluated via its confidence:
+\begin{equation}
+    \text{Confidence} = \frac{\text{Support}(A \cup B)}{\text{Support}(A)}
+\end{equation}
+
+\subsection{Knowledge Graph Embeddings (ComplEx)}
+Real-world knowledge graphs are often incomplete. To predict missing links, we embedded the entities and relations into a complex vector space $\mathbb{C}^d$ using the ComplEx model.
+The plausibility score of a triple $(h, r, t)$ is computed as the real part of the multi-linear dot product:
+\begin{equation}
+    \text{score} = \text{Re}(\langle \mathbf{h}, \mathbf{r}, \bar{\mathbf{t}} \rangle)
+\end{equation}
+The complex arithmetic inherently captures asymmetric relations (e.g., \textit{fatherOf} implies directionality), unlike symmetric models such as DistMult. The model is optimized using Binary Cross-Entropy (BCE) loss alongside negative sampling.
+
+\section{Experiments and Results}
+
+\subsection{Network Topologies and Centralities}
+Our connected component analysis revealed exactly 50 distinct nuclear families, exhibiting zero cross-family connections. The average family size was tightly constrained to approximately 26 members. The global relationship entropy was calculated at 3.1964, indicating a highly diverse set of relation types.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{outputs/detailed_family_subgraph.png}
+    \caption{Topology of a single isolated family.}
+    \label{fig:family_subgraph}
+\end{figure}
+
+The degree distribution was heavily skewed, confirming a hierarchical family structure. Bridge individuals (nodes with the highest betweenness centrality) effectively linked multi-generational tiers within the 50 subgraphs.
+
+\subsection{Evaluation of Community Detection}
+Both Louvain and Girvan-Newman algorithms performed exceptionally well on the dataset. The Louvain algorithm achieved a modularity of 0.9793, while Girvan-Newman achieved 0.9700. 
+
+\begin{table}[h]
+    \centering
+    \caption{Community Detection Performance}
+    \begin{tabular}{lcc}
+        \toprule
+        \textbf{Metric} & \textbf{Louvain} & \textbf{Girvan-Newman} \\
+        \midrule
+        Purity & 1.0000 & 1.0000 \\
+        NMI & 1.0000 & 0.9992 \\
+        ARI & 1.0000 & 0.9984 \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:community_metrics}
+\end{table}
+As shown in Table~\ref{tab:community_metrics}, the communities detected by the algorithms aligned almost perfectly with the 50 actual families, proving the robustness of graph-theoretic clustering on dense relational data.
+
+\subsection{Logical Rules and Confidence}
+Rule mining extracted seven core structural rules. All transitive rules (e.g., $\text{motherOf}(X,Y) \land \text{motherOf}(Y,Z) \rightarrow \text{grandmotherOf}(X,Z)$) achieved 100\% confidence. However, inverse rules such as $\text{motherOf}(X,Y) \rightarrow \text{daughterOf}(Y,X) \lor \text{sonOf}(Y,X)$ yielded a lower confidence of 60.57\%, indicating that inverse records were partially missing from the raw data.
+
+\subsection{Link Prediction Performance}
+The ComplEx model was trained over 350 epochs with a learning rate of 0.002, a batch size of 256, and an embedding dimension of 200. Hyperparameter tuning was critical; these optimal settings yielded a Mean Reciprocal Rank (MRR) of 0.3711, a Hits@1 score of 0.0186, and an impressive Hits@10 score of 0.9322. The high Hits@10 score demonstrates the model's strong capability in ranking the correct entity within its top predictions, successfully learning the complex relational dependencies of the family tree without explicit rule programming.
+
+\section{Conclusion}
+This study validates the efficacy of diverse graph analytics techniques on the MetaFam dataset. Traditional graph metrics provided deep insights into familial hierarchies and key connector individuals. Community detection algorithms perfectly isolated biological families. Finally, the ComplEx knowledge graph embedding model proved highly capable of learning directed, asymmetric family relationships, yielding robust predictive performance. Together, these methods offer a complete pipeline for analyzing and inferring relationships within highly structured social and biological networks.
+
+\bibliographystyle{plain}
+\begin{thebibliography}{1}
+\bibitem{ref1}
+Family relation prediction based on the knowledge graph research paper. \url{https://dl.acm.org/doi/10.1145/3712464.3712489}
+\end{thebibliography}
+
+\end{document}

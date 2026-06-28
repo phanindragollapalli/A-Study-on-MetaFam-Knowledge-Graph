@@ -37,11 +37,11 @@ The knowledge graph contains entities (people) and relations (family relationshi
 ```
 A-Study-on-MetaFam-Knowledge-Graph/
 ├── README.md                    # This file
-├── MetaFam_study.pdf 
-├── report.tex                   # LaTeX source for the report
 ├── requirements.txt             # Python environment dependencies
 ├── docs/
-│   └── THEORY.md               # Detailed mathematical & theoretical foundations
+│   ├── THEORY.md               # Detailed mathematical & theoretical foundations
+│   ├── MetaFam_study.pdf 
+│   └── MetaFam_study.tex       # LaTeX source for the report
 ├── data/
 │   ├── train.txt               # Training triples (13,822 triples)
 │   └── test.txt                # Test triples for evaluation
